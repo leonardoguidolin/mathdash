@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="description" content="Pratique matemática com este jogo rápido e grátis!">
+  <meta name="keywords" content="jogo educativo, matemática, praticar matemática online">
+  <title>Math Dash</title>
+  <style>
+    body {
+      text-align: center;
+      font-family: Arial, sans-serif;
+      background: #f0f0f0;
+      margin: 0;
+      padding: 20px;
+    }
+    h1 {
+      color: #333;
+      margin-bottom: 20px;
+    }
+    #jogo {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 400px;
+      margin: 0 auto;
+    }
+    p {
+      margin: 10px 0;
+      font-size: 18px;
+    }
+    input {
+      padding: 5px;
+      margin: 10px;
+      width: 100px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    button:hover {
+      background: #45a049;
+    }
+    #mensagem {
+      color: #ff4444;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <h1>Math Dash</h1>
+  <div id="jogo">
+    <p>Pontos: <span id="pontos">0</span></p>
+    <p>Tempo: <span id="tempo">30</span>s</p>
+    <p id="pergunta"></p>
+    <input type="number" id="resposta" autofocus>
+    <button onclick="verificar()">Enviar</button>
+    <p id="mensagem"></p>
+  </div>
+
+  <script>
+    let pontos = 0;
+    let tempo = 30;
+    let timer;
+    let respostaCorreta;
+
+    // Inicia o jogo
+    window.onload = function() {
+      novaPergunta();
+      timer = setInterval(contarTempo, 1000);
+    };
+
+    // Gera nova pergunta
+    function novaPergunta() {
+      let num1 = Math.floor(Math.random() * 10) + 1;
+      let num2 = Math.floor(Math.random() * 10) + 1;
+      let operacao = ["+", "-", "*", "/"][Math.floor(Math.random() * 4)];
+      if (operacao === "/") {
+        num1 = num1 * num2; // Garante divisão exata
+      }
+      document.getElementById("pergunta").innerHTML = `${num1} ${operacao} ${num2} = ?`;
+      respostaCorreta = eval(`${num1} ${operacao} ${num2}`);
+      if (operacao === "/") respostaCorreta = Math.round(respostaCorreta);
+      document.getElementById("resposta").value = "";
+      document.getElementById("mensagem").innerHTML = "";
+    }
+
+    // Verifica resposta
+    function verificar() {
+      let resposta = parseInt(document.getElementById("resposta").value);
+      if (resposta === respostaCorreta) {
+        pontos += 10;
+        document.getElementById("pontos").innerHTML = pontos;
+        novaPergunta();
+      } else {
+        document.getElementById("mensagem").innerHTML = "Errado! Tente novamente.";
+        setTimeout(fimDeJogo, 1000); // Pequena pausa antes de encerrar
+      }
+    }
+
+    // Contador de tempo
+    function contarTempo() {
+      tempo--;
+      document.getElementById("tempo").innerHTML = tempo;
+      if (tempo <= 0) fimDeJogo();
+    }
+
+    // Fim de jogo
+    function fimDeJogo() {
+      clearInterval(timer);
+      document.getElementById("jogo").innerHTML = 
+        `Fim de Jogo! Pontos: ${pontos} <br><button onclick="location.reload()">Jogar Novamente</button>`;
+    }
+
+    // Permite usar Enter para enviar
+    document.getElementById("resposta").addEventListener("keypress", function(event) {
+      if (event.key === "Enter") verificar();
+    });
+  </script>
+</body>
+</html>
